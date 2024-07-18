@@ -50,7 +50,7 @@ class LocalCurrencyProcessor implements LocalCurrencyProcessorInterface
 
     private function isEu($countryCode)
     {
-        return in_array($countryCode, self::EU_COUNTRIES) ? 'yes' : 'no';;
+        return in_array($countryCode, self::EU_COUNTRIES);
     }
 
     public function fetchBinResults($bin)
@@ -80,7 +80,6 @@ class LocalCurrencyProcessor implements LocalCurrencyProcessorInterface
         $currency = trim(explode(':', $payment[2])[1], '"}');
 
         $binResults = $this->fetchBinResults($bin);
-        $isEu = $this->isEu($binResults->country->alpha2);
 
         $rate = $this->fetchExchangeRate($currency);
         if ($currency == 'EUR' || $rate == 0) {
@@ -88,7 +87,7 @@ class LocalCurrencyProcessor implements LocalCurrencyProcessorInterface
         } else {
             $amntFixed = $amount / $rate;
         }
-        $this->amntsFixed[] = $amntFixed * ($isEu='yes') ? 0.01 : 0.02;
+        $this->amntsFixed[] = $amntFixed * $this->isEu($binResults->country->alpha2) ? 0.01 : 0.02;
     }
 
     public function printResult()
